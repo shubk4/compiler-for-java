@@ -7,31 +7,25 @@
    #include <iostream>
    #include <vector>
    #include <algorithm>
-    
- using namespace std;
+   void yyerror(const char *s);
+   using namespace std;
    
-  std::map<std::string,int> mp;
-  std::map<std::string,std::string> mp1;
-  std::vector<string> v;
-  int line_no=1;
-
+ 
 
 %}
 
-letter [a-zA-z]
-digit [0-9]
+
 decimalintegerliteral (?:0|[1-9](?:_*[0-9])*)[lL]?
 hexadecimalintegerliteral 0x[a-fA-F0-9](?:_*[a-fA-F0-9])*[lL]?
 octalintegerliteral  0[0-7](?:_*[0-7])*[lL]?
 binaryintegerliteral 0[bB][01](?:_*[01])*[lL]?
 decimalfloatingpointliteral [+-]?(?:_*[0-9])+[.]?(?:_*[0-9])*([e][+-]?(?:_*[0-9])+)?[fF]?
 hexadecimalfloatingpointliteral 0x(?:_*[a-fA-F0-9])+[.]?(?:_*[a-fA-F0-9])+([pP][+-]?(?:_*[a-fA-F0-9])+)?[fF]?
-bool "true"|"false"
 ws [ \t\f]
 string (\"[^\n"]*\")
 character (\'[.^\n]\')
 comment ("//"(.*))
-textblock (\"\"\"[^\n"]*\"\"\")
+
 
 %%
 "abstract" {return Abstract; }
@@ -56,88 +50,115 @@ textblock (\"\"\"[^\n"]*\"\"\")
 "throw" {return throw;}
 "byte" {return byte;}
 "else" {return else;}
-"import" |     
-"public" |   
-"throws" |
-"case" |   
-"enum" |  
-"instanceof" |   
-"return" |
-"transient" |
-"catch" |
-"extends" |
-"int" | 
-"short" |
-"try" |
-"char" |      
-"final" |     
-"interface" |   
-"static" | 
-"void" |
-"class" |     
-"finally" |    
-"long" |        
-"strictfp" |  
-"volatile" |
-"const" | 
-"float" |
-"native" | 
-"super" |
-"while" |
-"_" |
-"exports" |
-"opens" |
-"requires" |  
-"uses" |
-"module" |       
-"permits" |   
-"sealed" |    
-"var" |
-"non-sealed" |   
-"provides" |
-"to" | 
-"with" |
-"open" |      
-"record" |   
-"transitive" |
-"yield" { mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Keyword"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
-  
-\n {line_no++;}
+"import" {return Import;}    
+"public" {return Public;}
+"throws" {return Throws;}
+"case" {return Case;}
+"enum" {return Enum;}
+"instanceof" {return Instanceof;}
+"return" {return Return;}
+"transient" {return Transient;}
+"catch" {return Catch;}
+"extends" {return Extends;}
+"int" {return Integer;}
+"short" {return Short;}
+"try" {return Try;}
+"char" {return Char;}
+"final" {return Final;}
+"interface" {return Interface;}
+"static" {return Static;}
+"void" {return Void;}
+"class" {return Class;}
+"finally" {return Finally;}
+"long" {return Long;}
+"strictfp" {return Strictfp;}
+"volatile" {return Volatile;}
+"const" {return Const;}
+"float" {return Float;}
+"native" {return Native;}
+"super" {return Super;}
+"while" {return While;}
+"_" {return Underscore;}
+"exports" {return Exports;}
+"opens" {return Opens;}
+"requires" {return Requires;}
+"uses" {return Uses;}
+"module" {return Module;}
+"permits" {return Permits;}
+"sealed" {return Sealed;}
+"var" {return Var;}
+"non-sealed" {return Non-sealed;}
+"provides" {return Provides;}
+"to" {return To;}
+"with" {return With;}
+"open" {return Open;}
+"record" {return Record;}
+"transitive" {return Transitive;}
+"yield" {return Yield;}
+"true" {return True;}
+"false" {return False;}
+"System.out.println" {  return Println; }
+"length" {  return ArrayLength; }  
+"main"  {  return Main; }
+"String" {  return String; }
+
+
+\n {yylineno++;}
+[ \t\r]  {  }
 
 {ws} {;}
 
-"="|">"|"<"|"!"|"~"|"?"|":"|"->"|"=="|">="|"<="|"!="|"&&"|"||"|"++"|"--"|"+"|"-"|"*"|"/"|"&"|"|"|"^"|"%"|"<<"|">>"|">>>"|"+="|"-="|"*="|"/="|"&="|"|="|"^="|"%="|"<<="|">>="|">>>=" { mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Operator"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
-
-"(" |
-")" |
-"{" | 
-"}" | 
-"[" | 
-"]" | 
-";" |  
-"," | 
-"." |  
-"..." |   
-"@" |   
-"::"  {   mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Separator"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }syntax tree with graphviz.
-}
+"=" {return '=';}
+">" {return '>';}
+"<" {return '<'; }
+"!" {return '!';}
+"~" {return '~';}
+"?" {return '?';}
+":" {return ':';}
+"->" {return '->';}
+"==" {return '==';}
+">=" {return '>=';}
+"<=" {return '<=';}
+"!=" {return '!=';}
+"&&" {return And;}
+"||" {return '||';}
+"++" {return '++';}
+"--" {return '--';}
+"+" {return '+';}
+"-" {return '-';}
+"*" {return '*';}
+"/" {return '/';}
+"&" {return '&';}
+"|" {return '|';}
+"^" {return '^';}
+"%" {return '%';}
+"<<" {return '<<';}
+">>" {return '>>';}
+">>>" {return '>>>';}
+"+=" {return '+=';}
+"-=" {return '-=';}
+"*=" {return '*=';}
+"/=" {return '/=';}
+"&=" {return '&=';}
+"|=" {return '|=';}
+"^=" {return '^=';}
+"%=" {return '%=';}
+"<<=" {return '<<=';}
+">>=" {return '>>=';}
+">>>=" {return '>>>=';} 
+  
+"("  {  return '(' ;}
+")"  {  return ')' ;}
+"{"  {return '{';} 
+"}"  {return '}';}
+"["  {return ']';}
+"]"  {return ']';}
+";"  {return ';';} 
+","  {return ',';}
+"."   {return '.';}
+"..." {return '...';}   
+"@"  {return '@';}  
+"::" {return '::';} 
 
 {comment} {;}
 
@@ -159,64 +180,24 @@ textblock (\"\"\"[^\n"]*\"\"\")
             }
         }
 
-{bool} {   mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Literal"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
 
-"null" {mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Literal"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
 
-({string})  {   mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext," Literal"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
 
-{decimalintegerliteral}|{hexadecimalintegerliteral}|{octalintegerliteral}|{binaryintegerliteral}   {   mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Literal"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
+({string})  {return String;}
 
-{decimalfloatingpointliteral}|{hexadecimalfloatingpointliteral}   {   mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Literal"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
+{decimalintegerliteral}|{hexadecimalintegerliteral}|{octalintegerliteral}|{binaryintegerliteral}   {return Integerliteral;}
 
-{character} {   mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Literal"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
 
-([_][a-zA-Z0-9_$]+|[a-zA-Z$][a-zA-Z0-9_$]*) {
-    mp[yytext]++; 
-  mp1.insert(pair<string,string>(yytext,"Identifier"));
-  std::vector<string>::iterator it = std::find(v.begin(),v.end(),yytext);
-  if(it == v.end()){
-    v.push_back(yytext);
-  }
-}
+{decimalfloatingpointliteral}|{hexadecimalfloatingpointliteral}   {return Floatingliteral;}
+  
 
-. {printf("illegal character : %s at %d \n", yytext,line_no);}
+{character} {return Character;}
+
+([_][a-zA-Z0-9_$]+|[a-zA-Z$][a-zA-Z0-9_$]*) {return Id;}
+
+"//".*"\n"      { yylineno++; }
+"/*"(.|"\n")*"*\\"    { yylineno++; }
+.  { yyerror("Unknown character"); };
 
 %%
 
@@ -224,23 +205,14 @@ int yywrap() {
     return(1);
 }
 
-int main() {
-
-    yylex();
-
-   FILE* fp = fopen("javaoutput.csv","a+");
-   
-if (!fp) {
-        
-        printf("Can't open file\n");
-        return 0;
-    }
-    fprintf(fp,"Lexeme,Token,Count \n");
-
-    for(auto i :v ){
-      fprintf(fp,"%s, %s, %d \n",i.c_str(),mp1[i].c_str(),mp[i]);
-    }
-
-  fclose(fp);
-
+void yyerror(const char *s) {
+    /*fflush(stdout);*/
+    /*printf("\n%*s\n%*s\n", column, "*", column, s);*/
+    //fprintf(stderr, "lexical error on line %d: %s\n", yylineno, s);
+    char sr[100];
+    sprintf(sr,"line %d %s\n", yylineno, s);
+    throw logic_error(sr);
 }
+
+
+
